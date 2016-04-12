@@ -32,8 +32,33 @@ function init(){
     // Текст отзыва
     var formReview = document.querySelector('.new-review textarea[name=text]');
 
-    // Кнопку добавить формы
+    // Кнопка "Добавить"
     var addForm = document.querySelector('.new-review__form-link');
+
+    // Кнопка "Закрыть"
+    var closeButton = document.querySelector('.new-review__header-close');
+
+    // Процедуры закрытия формы
+    function closeForm() {
+    	// Скрываем форму
+    	form.style.display = "none";
+
+    	// Очищаем координаты
+    	form.dataset.cordX = "";
+    	form.dataset.cordY = "";
+
+    	// Очищаем заголовок формы
+    	formTitle.innerText = "";
+
+    	// Очищаем имя автора
+    	formName.value = "";
+
+    	// Очищаем место отзыва
+    	formPlace.value = "";
+
+    	// Очищаем текст отзыва
+    	formReview.value = "";    	
+    }
 
     // Обработка клика по карте
     myMap.events.add('click', function (e) {
@@ -87,6 +112,14 @@ function init(){
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://localhost:3000', true);
         xhr.send(addData);
+
+        // Закрываем форму
+        closeForm();
     });
-    
+
+    // Обработка закрытия формы
+    closeButton.addEventListener('click',function(e){
+        e.preventDefault();
+        closeForm();
+    });
 }
