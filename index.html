@@ -3,16 +3,68 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Гео-отзывы</title>
-	<style>
-		body {
-			padding: 0;
-			margin: 0;
-		}
-	</style>
-	<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="http://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
 	<script src="script.js"></script>
 </head>
 <body>
 	<div id="map" style="width: 100%; height: 55px;"></div>
+	<div class="new-review">
+		<div class="new-review__header">
+			<div class="new-review__header-title">
+				Невский пр., 78, Санкт-Петербург, 191025
+			</div>
+			<a href="#" class="new-review__header-close"></a>
+		</div>
+		<div class="new-review__content">
+			<ul class="new-review__list">
+				<li class="new-review__item">
+					<div class="new-review__item-title">
+						<span class="new-review__item-author">svetlana</span>
+						<span class="new-review__item-place">Шоколадница</span>
+						<span class="new-review__item-date">13.12.2015</span>
+					</div>
+					<div class="new-review__item-content">
+						Очень хорошее место!
+					</div>
+				</li>
+				<li class="new-review__item">
+					<div class="new-review__item-title">
+						<span class="new-review__item-author">svetlana</span>
+						<span class="new-review__item-place">Шоколадница</span>
+						<span class="new-review__item-date">13.12.2015</span>
+					</div>
+					<div class="new-review__item-content">
+						Очень хорошее место!
+					</div>
+				</li>
+				<li class="new-review__item">
+					<div class="new-review__item-title">
+						<span class="new-review__item-author">svetlana</span>
+						<span class="new-review__item-place">Шоколадница</span>
+						<span class="new-review__item-date">13.12.2015</span>
+					</div>
+					<div class="new-review__item-content">
+						Очень хорошее место! Очень хорошее место! Очень хорошее место!
+					</div>
+				</li>
+			</ul>
+			<form action="" class="new-review__form">
+				<div class="new-review__form-header">Ваш отзыв</div>
+				<div class="new-review__form-wrapper">
+					<input type="text" class="new-review__form-input" name="name" placeholder="Ваше имя">
+				</div>
+				<div class="new-review__form-wrapper">
+					<input type="text" class="new-review__form-input" name="place" placeholder="Укажите место">
+				</div>
+				<div class="new-review__form-wrapper new-review__form-wrapper_last">
+					<textarea name="text" class="new-review__form-textarea" placeholder="Поделитесь впечатлениями"></textarea>
+				</div>
+				<div class="new-review__form-wrapper2 clearfix">
+					<a href="#" class="new-review__form-link">Добавить</a>					
+				</div>
+			</form>
+		</div>
+	</div>
 </body>
 </html>

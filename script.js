@@ -4,20 +4,19 @@ window.onload = function() {
     map.style = "width: "+window.innerWidth+"px; height: "+window.innerHeight+"px";    
 }
 
+
+
 ymaps.ready(init);
-var myMap, 
-    myPlacemark;
+var myMap;
 
 function init(){ 
     myMap = new ymaps.Map("map", {
         center: [55.76, 37.64],
         zoom: 17
-    }); 
-        
-    myPlacemark = new ymaps.Placemark([55.76, 37.64], {
-        hintContent: 'Москва!',
-        balloonContent: 'Столица России'
+    });     
+
+    myMap.events.add('click', function (e) {        
+        var coords = e.get('coords');
+        console.log(coords);
     });
-    
-    myMap.geoObjects.add(myPlacemark);
 }
