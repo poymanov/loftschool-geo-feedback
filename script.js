@@ -1,22 +1,23 @@
-window.onload = function() {
-    // Карту на весь экран
-    var map = document.getElementById('map'); 
-    map.style = "width: "+window.innerWidth+"px; height: "+window.innerHeight+"px";    
-}
-
-
-
 ymaps.ready(init);
-var myMap;
-
 
 
 function init(){ 
-    myMap = new ymaps.Map("map", {
+    var myMap = new ymaps.Map("map", {
         center: [55.76, 37.64],
         zoom: 17
-    });     
-        
+    }); 
+
+    var objectManager = new ymaps.ObjectManager({
+    	clusterize: true,
+      gridSize: 32
+    });
+    
+    objectManager.objects.options.set('preset', 'islands#greenDotIcon');
+    objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
+    myMap.geoObjects.add(objectManager);
+    
+    renderMarks();
+
     // Форма нового отзыва    
     var form = document.querySelector('.new-review');
 
@@ -58,6 +59,34 @@ function init(){
 
     	// Очищаем текст отзыва
     	formReview.value = "";    	
+    }
+
+    // Вывод всех меток полученных с сервера
+    function renderMarks(){
+
+    	// Получение данных с сервера
+    	allData = {"op":"all"};
+    	allData = JSON.stringify(allData);
+
+    	var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:3000', true);
+      xhr.send(allData);
+
+      xhr.onreadystatechange = function() {
+      	if (xhr.readyState != 4) return;
+      	allMarks = JSON.parse(xhr.response);
+
+      	// Выводим все метки
+
+      	for (key in allMarks) {
+  				allMarks[key].forEach(function(i){
+  					var cordX = i.coords.x;
+  					var cordY = i.coords.y;
+  					var myPlacemark = new ymaps.Placemark([cordX, cordY]);
+    				myMap.geoObjects.add(myPlacemark);
+  				});
+				}
+      }
     }
 
     // Обработка клика по карте
@@ -115,6 +144,9 @@ function init(){
 
         // Закрываем форму
         closeForm();
+
+        // Получаем и показываем все метки
+        renderMarks();
     });
 
     // Обработка закрытия формы
