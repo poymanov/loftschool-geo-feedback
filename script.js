@@ -7,14 +7,13 @@ function init(){
         zoom: 17
     }); 
 
-    var objectManager = new ymaps.ObjectManager({
-    	clusterize: true,
-      gridSize: 32
+    var clusterer = new ymaps.Clusterer({
+      preset: 'islands#invertedVioletClusterIcons',
+      groupByCoordinates: false,
+      clusterDisableClickZoom: true,
+      clusterHideIconOnBalloonOpen: false,
+      geoObjectHideIconOnBalloonOpen: false
     });
-    
-    objectManager.objects.options.set('preset', 'islands#greenDotIcon');
-    objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
-    myMap.geoObjects.add(objectManager);
     
     renderMarks();
 
@@ -76,16 +75,22 @@ function init(){
       	if (xhr.readyState != 4) return;
       	allMarks = JSON.parse(xhr.response);
 
-      	// Выводим все метки
+      	// Удаляем все метки
 
+      	var geoObjects = [];
+
+      	// Выводим все метки
       	for (key in allMarks) {
-  				allMarks[key].forEach(function(i){
-  					var cordX = i.coords.x;
-  					var cordY = i.coords.y;
-  					var myPlacemark = new ymaps.Placemark([cordX, cordY]);
-    				myMap.geoObjects.add(myPlacemark);
+  				allMarks[key].forEach(function(item){
+  					var cordX = item.coords.x;
+  					var cordY = item.coords.y;
+    				geoObjects.push(new ymaps.Placemark([cordX, cordY]));
   				});
 				}
+
+				clusterer.add(geoObjects);
+    		myMap.geoObjects.add(clusterer);
+
       }
     }
 
@@ -143,10 +148,11 @@ function init(){
         xhr.send(addData);
 
         // Закрываем форму
-        closeForm();
+        // closeForm();
 
-        // Получаем и показываем все метки
-        renderMarks();
+        // Добавляем метку на карту
+				clusterer.add(new ymaps.Placemark([cordX, cordY]));
+    		myMap.geoObjects.add(clusterer);
     });
 
     // Обработка закрытия формы
