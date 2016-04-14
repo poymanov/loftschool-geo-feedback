@@ -5,7 +5,7 @@
 	<title>Гео-отзывы</title>
 	<link rel="stylesheet" href="css/style.css">
 	<script src="http://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
-	<script src="script.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
 </head>
 <body>
 	<div id="map"></div>
@@ -17,23 +17,8 @@
 			<a href="#" class="new-review__header-close"></a>
 		</div>
 		<div class="new-review__content">
-			<ul class="new-review__list">
-				<li class="new-review__item">
-					<div class="new-review__item-content">
-						Отзывов нет..
-					</div>
-				</li>
-<!-- 				<li class="new-review__item">
-					<div class="new-review__item-title">
-						<span class="new-review__item-author">svetlana</span>
-						<span class="new-review__item-place">Шоколадница</span>
-						<span class="new-review__item-date">13.12.2015</span>
-					</div>
-					<div class="new-review__item-content">
-						Очень хорошее место!
-					</div>
-				</li> -->
-			</ul>
+			<div class="new-review__wrapper">
+			</div>
 			<form action="" class="new-review__form">
 				<div class="new-review__form-header">Ваш отзыв</div>
 				<div class="new-review__form-wrapper">
@@ -51,5 +36,30 @@
 			</form>
 		</div>
 	</div>
+	<script src="script.js"></script>
+	<script type="text/x-handlebars-template" id="reviews-list">
+		<ul class="new-review__list">
+			{{#if list}}
+				{{#each list}}
+					<li class="new-review__item">
+						<div class="new-review__item-title">
+							<span class="new-review__item-author">{{name}}</span>
+							<span class="new-review__item-place">{{place}}</span>
+							<span class="new-review__item-date">{{formatDate date}}</span>
+						</div>
+						<div class="new-review__item-content">
+							{{text}}
+						</div>
+					</li>
+				{{/each}}
+			{{else}}
+				<li class="new-review__item">
+					<div class="new-review__item-content">
+						Отзывов нет..
+					</div>
+				</li>
+			{{/if}}
+		</ul>
+	</script>
 </body>
 </html>

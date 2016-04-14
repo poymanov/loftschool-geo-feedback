@@ -17,6 +17,12 @@ function init(){
     
     renderMarks();
 
+    // Подключение handlebars helper
+
+    Handlebars.registerHelper('formatDate', function(ts) {
+    	return new Date(ts).toLocaleString();
+		});
+
     // Форма нового отзыва    
     var form = document.querySelector('.new-review');
 
@@ -37,6 +43,15 @@ function init(){
 
     // Кнопка "Закрыть"
     var closeButton = document.querySelector('.new-review__header-close');
+
+    // Шаблон отзывов в окне нового отзыва
+    var source = document.getElementById('reviews-list').innerHTML;
+
+    // Скомпилированный шаблон
+    var templateFn = Handlebars.compile(source);
+
+    // Область в форме для вывода списка отзывов
+    var reviewsBlock = document.querySelector('.new-review__wrapper');
 
     // Процедуры закрытия формы
     function closeForm() {
@@ -72,26 +87,44 @@ function init(){
       xhr.send(allData);
 
       xhr.onreadystatechange = function() {
-      	if (xhr.readyState != 4) return;
-      	allMarks = JSON.parse(xhr.response);
+    	if (xhr.readyState != 4) return;
+    	allMarks = JSON.parse(xhr.response);
 
-      	// Удаляем все метки
+    	// Удаляем все метки
 
-      	var geoObjects = [];
+    	var geoObjects = [];
 
-      	// Выводим все метки
-      	for (key in allMarks) {
-  				allMarks[key].forEach(function(item){
-  					var cordX = item.coords.x;
-  					var cordY = item.coords.y;
-    				geoObjects.push(new ymaps.Placemark([cordX, cordY]));
-  				});
-				}
+    	// Выводим все метки
+    	for (key in allMarks) {
+				allMarks[key].forEach(function(item){
+					var cordX = item.coords.x;
+					var cordY = item.coords.y;
+					geoObjects.push(new ymaps.Placemark([cordX, cordY]));
+				});
+			}
 
-				clusterer.add(geoObjects);
-    		myMap.geoObjects.add(clusterer);
+			clusterer.add(geoObjects);
+			myMap.geoObjects.add(clusterer);
 
       }
+    }
+
+    // Вывод всех отзывов по адресу в форме
+    function getReviewsAddress(address) {
+  	  getData = {"op": "get", "address": address}
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:3000', true);
+      getData = JSON.stringify(getData);
+      xhr.send(getData);
+
+      xhr.onreadystatechange = function() {
+          if (xhr.readyState != 4) return;
+
+          // Передаем ответ сервера в шаблонизатора
+          allReviews = JSON.parse(xhr.response);
+          template = templateFn({list: allReviews});
+					reviewsBlock.innerHTML = template;
+      };
     }
 
     // Обработка клика по карте
@@ -110,11 +143,14 @@ function init(){
         form.dataset.cordY = coords[1];
 
         ymaps.geocode(coords).then(function (res) {
-            var firstGeoObject = res.geoObjects.get(0);
-            var address = firstGeoObject.properties.get('name')+", "+firstGeoObject.properties.get('description');
+          var firstGeoObject = res.geoObjects.get(0);
+          var address = firstGeoObject.properties.get('name')+", "+firstGeoObject.properties.get('description');
 
-            // Устанавливаем заголовок окна формы            
-            formTitle.innerText = address;
+          // Устанавливаем заголовок окна формы            
+          formTitle.innerText = address;
+
+          // Выводим отзывы по текущему адресу
+      		getReviewsAddress(address);
         });
     });
     
@@ -147,12 +183,12 @@ function init(){
         xhr.open('POST', 'http://localhost:3000', true);
         xhr.send(addData);
 
-        // Закрываем форму
-        // closeForm();
-
         // Добавляем метку на карту
 				clusterer.add(new ymaps.Placemark([cordX, cordY]));
-    		myMap.geoObjects.add(clusterer);
+	    	myMap.geoObjects.add(clusterer);
+
+	    	// Получаем все отзывы по данному адресу 
+	    	getReviewsAddress(address);
     });
 
     // Обработка закрытия формы
