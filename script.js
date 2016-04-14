@@ -7,14 +7,25 @@ function init(){
         zoom: 17
     }); 
 
+    // Оформление для контента кластера
+    var customItemContentLayout = ymaps.templateLayoutFactory.createClass(
+        '<h2 class=ballon_header>{{ properties.balloonContentHeader|raw }}</h2>' +
+            '<div class=ballon_body>{{ properties.balloonContentBody|raw }}</div>' +
+            '<div class=ballon_footer>{{ properties.balloonContentFooter|raw }}</div>'
+    );
+
+    // Определение кластера    
     var clusterer = new ymaps.Clusterer({
       preset: 'islands#invertedVioletClusterIcons',
       groupByCoordinates: false,
+      clusterBalloonContentLayout: 'cluster#balloonCarousel',
+      clusterBalloonItemContentLayout: customItemContentLayout,
       clusterDisableClickZoom: true,
       clusterHideIconOnBalloonOpen: false,
       geoObjectHideIconOnBalloonOpen: false
     });
     
+    // Получение всех меток с сервера
     renderMarks();
 
     // Подключение handlebars helper
@@ -99,7 +110,15 @@ function init(){
 				allMarks[key].forEach(function(item){
 					var cordX = item.coords.x;
 					var cordY = item.coords.y;
-					geoObjects.push(new ymaps.Placemark([cordX, cordY]));
+
+					// Формируем описание для карусели кластера
+					var placemark = new ymaps.Placemark([cordX, cordY], {
+            balloonContentHeader: item.name,
+            balloonContentBody: item.text,
+            balloonContentFooter: new Date(item.date).toLocaleString()
+        	});
+
+					geoObjects.push(placemark);
 				});
 			}
 
@@ -132,6 +151,15 @@ function init(){
         //При клике на карте открываем форму добавления нового отзыва
         var coords = e.get('coords');
         form.style.display = "block";
+
+	    	// Очищаем имя автора
+	    	formName.value = "";
+
+	    	// Очищаем место отзыва
+	    	formPlace.value = "";
+
+	    	// Очищаем текст отзыва
+	    	formReview.value = ""; 
 
         // Координаты клика на экране
         var pagePixels = e.get('pagePixels');
@@ -183,8 +211,14 @@ function init(){
         xhr.open('POST', 'http://localhost:3000', true);
         xhr.send(addData);
 
-        // Добавляем метку на карту
-				clusterer.add(new ymaps.Placemark([cordX, cordY]));
+        // Добавляем метку на карту и описание для кластера
+				var placemark = new ymaps.Placemark([cordX, cordY], {
+          balloonContentHeader: name,
+          balloonContentBody: review,
+          balloonContentFooter: new Date(date).toLocaleString()
+      	});
+
+				clusterer.add(placemark);
 	    	myMap.geoObjects.add(clusterer);
 
 	    	// Получаем все отзывы по данному адресу 
