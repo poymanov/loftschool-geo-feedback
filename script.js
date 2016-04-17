@@ -76,21 +76,15 @@ function init(){
     	// Очищаем заголовок формы
     	formTitle.innerText = "";
 
-    	// Очищаем имя автора
-    	formName.value = "";
-
-    	// Очищаем место отзыва
-    	formPlace.value = "";
-
-    	// Очищаем текст отзыва
-    	formReview.value = "";    	
+      // Очищаем поля формы
+    	clearForm(); 	
     }
 
     // Вывод всех меток полученных с сервера
     function renderMarks(){
 
     	// Получение данных с сервера
-    	allData = {"op":"all"};
+    	var allData = {"op":"all"};
     	allData = JSON.stringify(allData);
 
     	var xhr = new XMLHttpRequest();
@@ -100,8 +94,6 @@ function init(){
       xhr.onreadystatechange = function() {
     	if (xhr.readyState != 4) return;
     	allMarks = JSON.parse(xhr.response);
-
-    	// Удаляем все метки
 
     	var geoObjects = [];
 
@@ -146,20 +138,23 @@ function init(){
       };
     }
 
+    // Обнуление значение поле формы
+    function clearForm() {
+        // Очищаем имя автора
+        formName.value = "";
+
+        // Очищаем место отзыва
+        formPlace.value = "";
+
+        // Очищаем текст отзыва
+        formReview.value = ""; 
+    }
+
     // Обработка клика по карте
     myMap.events.add('click', function (e) {
         //При клике на карте открываем форму добавления нового отзыва
         var coords = e.get('coords');
         form.style.display = "block";
-
-	    	// Очищаем имя автора
-	    	formName.value = "";
-
-	    	// Очищаем место отзыва
-	    	formPlace.value = "";
-
-	    	// Очищаем текст отзыва
-	    	formReview.value = ""; 
 
         // Координаты клика на экране
         var pagePixels = e.get('pagePixels');
@@ -177,6 +172,9 @@ function init(){
           // Устанавливаем заголовок окна формы            
           formTitle.innerText = address;
 
+          // Очищаем поля формы
+          clearForm();
+
           // Выводим отзывы по текущему адресу
       		getReviewsAddress(address);
         });
@@ -184,6 +182,7 @@ function init(){
     
     // Обработка клика по кнопке Добавить
     addForm.addEventListener('click',function(){
+
         // Данные для отправки на сервер
         var cordX = form.dataset.cordX;
         var cordY = form.dataset.cordY;
@@ -219,7 +218,9 @@ function init(){
       	});
 
 				clusterer.add(placemark);
-	    	myMap.geoObjects.add(clusterer);
+
+        // Очищаем значения полей формы
+        clearForm();
 
 	    	// Получаем все отзывы по данному адресу 
 	    	getReviewsAddress(address);
